@@ -20,7 +20,7 @@ Designed with a modern "Deep Indigo Glass" aesthetic, this project focuses on hi
 * **Zero Dependencies:** Built entirely with raw HTML, CSS, and Vanilla JavaScript. No bulky frameworks.
 
 ## 🚀 Live Demo
-*(You can add your GitHub Pages link here once you host it)*
+*https://sites.google.com/view/codestorm*
 
 ## 📂 Sections Included
 1. **Hero:** Typewriter effect, event meta-data, and primary Call-To-Action.
