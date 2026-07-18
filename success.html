@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Registration Successful — CodeStorm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f8f9ff;
+      --card:#757575;
+      --muted:#60677a;
+      --accent:#6d28d9;
+      --accent-2:#0ea5e9;
+      --radius:14px;
+      --max-w:720px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+      background:linear-gradient(180deg,#000000 0%, var(--bg) 80%);
+      color:#1c1e21;
+      display:flex;justify-content:center;align-items:center;
+      min-height:100vh;padding:24px;
+    }
+
+    body {
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.5;
+            overflow-x: hidden;
+            padding-bottom: 40px;
+            min-height: 100vh;
+            position: relative; /* Needed for the ::before fix */
+        }
+
+        /* --- THE MOBILE SCROLL FIX --- */
+        /* This keeps your background perfectly fixed without the white jump glitch */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            z-index: -2; /* Behind everything */
+            
+            /* YOUR ORIGINAL BACKGROUND */
+            background: linear-gradient(to bottom, rgba(2, 4, 10, 0.85), rgba(2, 4, 10, 0.95)),
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            /* No need for 'attachment: fixed' here because the element itself is fixed */
+        }
+
+        #particle-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none; opacity: 0.6; mix-blend-mode: screen;
+        }
+
+    .card{background: linear-gradient(to bottom, rgba(2, 4, 10, 0.85), rgba(2, 4, 10, 0.95)),
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;padding:32px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,0.06);max-width:var(--max-w);width:100%;text-align:center;animation:fadeIn .6s ease}
+    h1{margin:0;font-size:28px;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .msg{color:#374151;margin-top:10px}
+    .details{margin-top:18px;color:var(--muted);line-height:1.5}
+    .qr{margin:20px auto;max-width:220px;background:#fff;padding:10px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .btn{display:inline-block;margin:12px 8px;padding:12px 18px;border-radius:12px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;text-decoration:none;font-weight:700}
+    .btn.secondary{background:#eef6ff;color:#0b3b4a}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    @media(max-width:520px){.card{padding:20px}h1{font-size:22px}}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎉 Congratulations!</h1>
+    <p class="msg">Your registration for <strong>CodeStorm — Python Pursuit</strong> is confirmed.</p>
+
+    <div class="details">
+      <div>📅 <strong>Date:</strong> 30th December 2026</div>
+      <div>⏰ <strong>Time:</strong> 9:00 AM Onwards</div>
+      <div>📍 <strong>Venue:</strong> Ilahia College of Engineering and Technology — Intelli AI Lab & Cipher Lab</div>
+      <div>🎓 <strong>Organised By:</strong> Department of Artificial Intelligence & Cyber Security</div>
+    </div>
+
+    <!-- QR code (entry or join link) -->
+    <div class="qr">
+      <img src="https://abhiram-ars.github.io/CodeStorm25/event-qr-code.png" alt="Event QR" style="width:100%;border-radius:10px">
+    </div>
+
+    <p style="color:var(--muted);font-size:13px;margin-top:6px">Save this page or screenshot the QR — you'll need it for verification.</p>
+
+    <div style="margin-top:14px">
+      <a class="btn" href="https://chat.whatsapp.com/FviKTwhxU1JFgUAgKrOnXB" target="_blank">Join WhatsApp Group</a>
+      <a class="btn secondary" href="https://abhiram-ars.github.io/CodeStorm25/">Back to Home</a>
+    </div>
+  </div>
+</body>
+</html>

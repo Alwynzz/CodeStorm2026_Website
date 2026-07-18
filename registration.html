@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CodeStorm 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Theme: Deep Indigo Glass */
+            --bg-main: #02040a;
+            --bg-card: rgba(20, 25, 40, 0.65); 
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #6366f1; 
+            --primary-light: #818cf8;
+            --gold: #ffc800;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        /* FIX: Set base color to black so any tiny glitches are invisible */
+        html { background-color: var(--bg-main); }
+
+        body {
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.5;
+            overflow-x: hidden;
+            padding-bottom: 40px;
+            min-height: 100vh;
+            position: relative; /* Needed for the ::before fix */
+        }
+
+        /* --- THE MOBILE SCROLL FIX --- */
+        /* This keeps your background perfectly fixed without the white jump glitch */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            z-index: -2; /* Behind everything */
+            
+            /* YOUR ORIGINAL BACKGROUND */
+            background: linear-gradient(to bottom, rgba(2, 4, 10, 0.85), rgba(2, 4, 10, 0.95)),
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            /* No need for 'attachment: fixed' here because the element itself is fixed */
+        }
+
+        #particle-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none; opacity: 0.6; mix-blend-mode: screen;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; height: 60px;
+            display: flex; align-items: center; z-index: 1000;
+            backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
+            background: rgba(2, 4, 10, 0.9); padding: 0 20px;
+        }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo {
+            font-weight: 800; font-size: 1.2rem; text-decoration: none;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .btn-header {
+            background: transparent; color: #818cf8; padding: 6px 12px;
+            font-weight: 700; font-size: 0.7rem; text-transform: uppercase;
+            text-decoration: none; border: 1px solid #6366f1; border-radius: 50px; transition: 0.2s;
+        }
+        .btn-header:active { background: #6366f1; color: white; }
+
+        /* --- HERO --- */
+        .hero { 
+            padding-top: 100px; padding-bottom: 30px; 
+            padding-left: 20px; padding-right: 20px; text-align: center; 
+        }
+
+        h1 {
+            font-size: 2.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 10px;
+            letter-spacing: -1px;
+            background: linear-gradient(to bottom right, #ffffff, #94a3b8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .typewriter-container {
+            font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; min-height: 1.5em;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .typed-text { background: linear-gradient(135deg, #fff 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .cursor { display: inline-block; background-color: #818cf8; width: 2px; height: 1.1rem; margin-left: 4px; animation: blink 1s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .hero p { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+
+        /* BADGE */
+        .top-badge-container { display: flex; justify-content: center; margin-bottom: 30px; }
+        .top-badge {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2));
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            padding: 8px 20px; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 800; color: white;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+            display: flex; align-items: center; gap: 8px;
+            animation: pulse 3s infinite;
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 15px rgba(99,102,241,0.3); } 50% { box-shadow: 0 0 25px rgba(99,102,241,0.6); } 100% { box-shadow: 0 0 15px rgba(99,102,241,0.3); } }
+
+        /* META GRID */
+        .meta-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-bottom: 25px;
+        }
+        .meta-box {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border);
+            border-radius: 12px; padding: 12px 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .meta-icon-small { font-size: 1.2rem; margin-bottom: 4px; }
+        .meta-label-small { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .meta-val-small { font-size: 0.9rem; font-weight: 700; color: white; white-space: nowrap; }
+
+        /* CTA */
+        .cta-stack { display: flex; flex-direction: column; width: 100%; }
+        .btn-main {
+            display: block; width: 100%; padding: 18px; text-align: center; border-radius: 12px;
+            font-weight: 800; text-decoration: none; font-size: 1.1rem; letter-spacing: 1px;
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, #6366f1, #a855f7); color: white; 
+            box-shadow: 0 4px 25px rgba(99, 102, 241, 0.5); position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-primary::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 100%; } 100% { left: 100%; } }
+
+        /* --- COUNTDOWN --- */
+        .countdown-container {
+            margin: 20px 20px 40px 20px; padding: 20px;
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .countdown-strip { display: flex; justify-content: space-between; gap: 8px; }
+        .time-box { 
+            flex: 1; text-align: center; 
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(99, 102, 241, 0.1) 100%);
+            padding: 10px 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 2px solid var(--primary);
+        }
+        .time-val { 
+            font-size: 1.4rem; font-weight: 800; display: block; line-height: 1; margin-bottom: 4px; color: white; 
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+        .time-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+
+        /* --- MODULES --- */
+        .section-header { margin: 50px 20px 20px; text-align: center; }
+        .section-header h2 { font-size: 2rem; margin-bottom: 5px; font-weight: 700; }
+        .section-header p { font-size: 0.9rem; color: var(--text-muted); }
+        
+        .mobile-stack { padding: 0 20px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 24px; position: relative; overflow: hidden; backdrop-filter: blur(10px);
+        }
+        .card-icon { 
+            width: 45px; height: 45px; background: rgba(255,255,255,0.05); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 15px;
+        }
+        .card h3 { font-size: 1.3rem; margin-bottom: 8px; font-weight: 700; color: white; }
+        .card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; }
+
+        .prize-card { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(236,72,153,0.1)); border-color: rgba(99,102,241,0.3); }
+        .prize-amount { font-size: 2.5rem; font-weight: 800; margin: 10px 0; display: block; color: white; text-shadow: 0 0 15px rgba(99,102,241,0.5); }
+        .badges-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .mini-badge { font-size: 0.75rem; padding: 6px 12px; background: rgba(255,255,255,0.1); border-radius: 6px; color: #cbd5e1; font-weight: 600; }
+
+        /* --- PRO TIP SMOOTH TRANSITION & BAR --- */
+        .pro-tip-card { 
+            border-color: rgba(255,200,0,0.3); background: rgba(255,200,0,0.05); 
+            overflow: hidden;
+        }
+        .pro-tip-card .card-icon { color: var(--gold); background: rgba(255,200,0,0.1); }
+        
+        #tip-text {
+            font-size: 1rem; color: #e2e8f0; min-height: 3.5em;
+            display: flex; align-items: center;
+            opacity: 1; transform: translateY(0); filter: blur(0);
+            transition: all 0.5s ease-in-out;
+        }
+
+        /* Slide Up & Fade Out */
+        .slide-out {
+            opacity: 0 !important;
+            transform: translateY(-20px) !important;
+            filter: blur(5px) !important;
+        }
+
+        /* Start Position for New Text (Invisible at bottom) */
+        .slide-in-start {
+            opacity: 0 !important;
+            transform: translateY(20px) !important;
+            filter: blur(5px) !important;
+            transition: none !important; 
+        }
+
+        /* Loading Bar */
+        .loading-bar-container {
+            width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px; margin-top: 15px; overflow: hidden;
+        }
+        .loading-bar {
+            height: 100%; background: var(--gold); width: 0%;
+        }
+        
+        @keyframes fillBar {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        /* TIMELINE */
+        .timeline { padding: 0 20px; margin-bottom: 40px; }
+        .t-item { display: flex; gap: 15px; margin-bottom: 25px; }
+        .t-marker { display: flex; flex-direction: column; align-items: center; }
+        .t-dot { width: 14px; height: 14px; background: var(--primary); border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 4px rgba(99,102,241,0.2); }
+        .t-line { width: 2px; flex-grow: 1; background: var(--border); margin-top: 5px; min-height: 40px; }
+        .t-content h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; color: white; }
+        .t-content p { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* PARTNERS */
+        .partners-section {
+            padding: 25px 15px; margin: 40px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px; border: 1px solid var(--border);
+            text-align: center; overflow: hidden;
+        }
+        .partners-header {
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--text-muted); margin-bottom: 20px; font-weight: 700;
+        }
+        .partners-row {
+            display: flex; flex-direction: row; justify-content: center; align-items: center; 
+            gap: 25px; flex-wrap: nowrap;
+        }
+        .sponsor-logo { 
+            height: 30px; width: auto; opacity: 0.8; filter: drop-shadow(0 0 5px rgba(255,255,255,0.1));
+        }
+
+        /* FOOTER */
+        footer { margin-top: 60px; background: #000; padding: 50px 20px; border-top: 1px solid var(--border); }
+        .footer-brand h4 { font-size: 1.5rem; margin-bottom: 10px; font-weight: 800; color: white; }
+        .footer-brand p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 30px; }
+        .contact-btn {
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            background: rgba(255,255,255,0.05); border-radius: 12px; text-decoration: none;
+            border: 1px solid var(--border); transition: 0.2s; margin-bottom: 15px;
+        }
+        .contact-btn:active { background: rgba(99, 102, 241, 0.1); border-color: var(--primary); }
+        .c-icon { font-size: 1.4rem; }
+        .c-info { display: flex; flex-direction: column; }
+        .c-role { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+        .c-name { color: white; font-weight: 700; font-size: 1rem; }
+
+        <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            color: #ffffff;
+        }
+
+        ul li {
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        ul li ul {
+            list-style-type: circle;
+            margin-top: 8px;
+        }
+
+        ul li ul li {
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            background: #f0f4ff;
+            border-left: 4px solid #4a6cf7;
+            padding: 12px 16px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        p {
+            color: #444;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+
+        .footer-note {
+            font-size: 0.95em;
+            color: #555;
+            margin-top: 25px;
+            text-align: center;
+
+        }
+
+        .timeline {
+            border-left: 3px solid #ddd;
+            padding-left: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-left: 25px;
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: -32px;
+            margin-right: 15px;
+            font-size: 20px;
+        }
+
+        .timeline-content h3 {
+            margin: 0;
+        }
+
+        }
+    </style>
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="hero">
+        
+        <h1>CodeStorm 26</h1>
+        <br>
+        <p>Scroll Down for Details and Registration</p>
+
+    </div>
+
+    <div class="section-header" id="rounds">
+        <h2>Modules</h2>
+        <p>3 Rounds to test your skills.</p>
+    </div>
+
+    <div class="mobile-stack">
+        <div class="card">
+            <h3>Format</h3>
+
+            <ul>
+                <li>Code Quiz: Guess the output</li>
+                <li>Bug Hunt: Find and fix errors</li>
+                <li>Code Rush: Fast coding challenge</li>
+            </ul>
+        </div>
+    </div>   
+
+    <div class="section-header" id="rounds">
+        <h2>Rules</h2>
+        <p>All Participants are requested to read the rules carefully before participating. </p>
+    </div>
+    <div class="mobile-stack">
+        <div class="card">
+            <h3>Terms &amp; Conditions</h3>
+
+            <ul>
+                <li><b>There will be elimination in every round. Shortlisting will be conducted after each round, and only shortlisted participants will proceed to the next round.</b></li>
+                <li>Participants must provide accurate, complete, and truthful information during registration and participation.</li>
+                <li><u>Punctuality</u> is mandatory during event due to the use of advanced digital platforms with pre-set, automated time controls.</li>
+                <li>The competition will operate strictly according to a pre-planned schedule.</li>
+                <li>The use of<u> AI tools</u> is <u>strictly prohibited</u> during the event.</li>
+                <li>Code must comply with the objective, constraints, and instructions provided in the problem statements.</li>
+                <li>All submissions will be automatically evaluated digitally on basis of correctness, efficiency, and performance against test cases as determined by technical Team.</li>
+                <li>The organizers reserve the <u>right to disqualify</u> any participant who:
+                    <ul>
+                        <li>Violates the Terms and Conditions</li>
+                        <li>Uses unauthorized tools or unfair means</li>
+                        <li>Fails to follow time discipline or event instructions</li>
+                        <li>Provides false or incorrect information</li>
+                    </ul>
+                </li>
+                <li>Participants must maintain honesty, discipline, and professionalism throughout the event.</li>
+            </ul>
+
+            <p style="color:white; font-size: 1.2rem;"><b>The organizers reserve the right to modify these Terms and Conditions at any time.</b></p>
+            <p style="color:white; font-size: 1.2rem;"><i>All updates will be communicated through official channels.</i></p>
+
+        </div>
+    </div>    
+
+    <br>
+
+    <div style="padding: 0 20px;">
+        <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAAMAAGPMqBJUNlNDSElPMDJHWDRJN0cyRk00MFQ5QURNVS4u" target="_blank" class="btn-main btn-primary">Proceed To Registration</a>
+    </div>
+
+    <div class="partners-section">
+        <div class="partners-header">Trusted & Supported By</div>
+        <div class="partners-row">
+            <img src="https://i.ibb.co/dwN4mCBG/Ilahia.png" alt="Sponsor" class="sponsor-logo">
+            <img src="https://i.ibb.co/8DTzDhXN/LekTech.png" alt="Sponsor" class="sponsor-logo">
+            <img src="https://i.ibb.co/5WKV4kqv/SLC.png" alt="Sponsor" class="sponsor-logo">
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-brand">
+            <h4>CodeStorm 2026</h4>
+            <p>Artificial Intelligence & Cyber Security Association <br>( AICSA )</p>
+        </div>
+        
+        <h5 style="color:white; margin-bottom: 20px; font-size: 0.8rem; font-weight:700; letter-spacing:1px; border-left: 3px solid #25D366; padding-left: 10px;">CHAT ON WHATSAPP</h5>
+        <div class="contact-stack">
+            <a href="https://wa.me/919747848675" target="_blank" class="contact-btn">
+                <span class="c-icon">💬</span>
+                <div class="c-info">
+                    <span class="c-role">Coordinator</span>
+                    <span class="c-name">Alvin Biju</span>
+                </div>
+            </a>
+            <a href="https://wa.me/917034718372" target="_blank" class="contact-btn">
+                <span class="c-icon">💬</span>
+                <div class="c-info">
+                    <span class="c-role">Tech Lead</span>
+                    <span class="c-name">Abhiram S</span>
+                </div>
+            </a>
+        </div>
+        
+        <p style="text-align: center; color: #555; font-size: 0.75rem; margin-top: 40px;">
+            &copy; 2026 CodeStorm.
+        </p>
+    </footer>
+
+    <script>
+        // DATE
+        const countDownDate = new Date("Jan 9, 2026 09:00:00").getTime();
+        setInterval(() => {
+            const now = new Date().getTime(); const dist = countDownDate - now;
+            document.getElementById("days").innerText = String(Math.floor(dist / (1000 * 60 * 60 * 24))).padStart(2, '0');
+            document.getElementById("hours").innerText = String(Math.floor((dist % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(Math.floor((dist % (1000 * 60)) / 1000)).padStart(2, '0');
+        }, 1000);
+
+        // Typewriter
+        const typedTextSpan = document.querySelector(".typed-text");
+        const cursorSpan = document.querySelector(".cursor");
+        const textArray = ["Think Hard.", "Debug Smart.", "Code Fast."];
+        let textArrayIndex = 0; let charIndex = 0;
+
+        function type() {
+            if (charIndex < textArray[textArrayIndex].length) {
+                if(!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
+                typedTextSpan.textContent += textArray[textArrayIndex].charAt(charIndex);
+                charIndex++; setTimeout(type, 100);
+            } else { cursorSpan.classList.remove("typing"); setTimeout(erase, 1500); }
+        }
+        function erase() {
+            if (charIndex > 0) {
+                if(!cursorSpan.classList.contains("typing")) cursorSpan.classList.add("typing");
+                typedTextSpan.textContent = textArray[textArrayIndex].substring(0, charIndex - 1);
+                charIndex--; setTimeout(erase, 50);
+            } else {
+                cursorSpan.classList.remove("typing");
+                textArrayIndex++; if(textArrayIndex >= textArray.length) textArrayIndex = 0;
+                setTimeout(type, 500);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => { setTimeout(type, 500); });
+
+        // --- BUTTER SMOOTH PRO TIPS ENGINE ---
+        const tips = [
+            "Output prediction carries high marks.",
+            "Read errors from bottom to top.",
+            "Split work: Logic vs. Syntax.",
+            "Test empty inputs & edge cases.",
+            "Brute force is better than broken code."
+        ];
+        
+        let tipIdx = 0;
+        const tipText = document.getElementById('tip-text');
+        const tipBar = document.getElementById('tip-bar');
+        const duration = 4000; // 4 seconds
+
+        function animateTip() {
+            // 1. Start Exit Animation
+            tipText.classList.add('slide-out');
+
+            setTimeout(() => {
+                // 2. Change Text
+                tipIdx = (tipIdx + 1) % tips.length;
+                tipText.textContent = tips[tipIdx];
+
+                // 3. Reset Position (Jump to bottom while invisible)
+                tipText.classList.remove('slide-out');
+                tipText.classList.add('slide-in-start');
+
+                // Force Reflow (Crucial for restart)
+                void tipText.offsetWidth;
+
+                // 4. Animate In
+                tipText.classList.remove('slide-in-start');
+
+                // 5. Restart Bar
+                tipBar.style.animation = 'none';
+                tipBar.offsetHeight; /* Trigger reflow */
+                tipBar.style.animation = `fillBar ${duration}ms linear`;
+
+            }, 500); // Wait 500ms for exit to finish
+        }
+
+        // Initialize First Run
+        tipText.textContent = tips[0];
+        tipBar.style.animation = `fillBar ${duration}ms linear`;
+        setInterval(animateTip, duration);
+
+        // Particles
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particlesArray = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.1 - 0.05; this.speedY = Math.random() * 0.1 - 0.05;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0; if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0; if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        function init() { for (let i = 0; i < 50; i++) { particlesArray.push(new Particle()); } }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); }
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+        init(); animate();
+    </script>
+</body>
+</html>
